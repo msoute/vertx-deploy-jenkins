@@ -1,0 +1,13 @@
+.*
+!.gitignore
+*.iml
+.idea
+**/*.project
+**/*.idea
+**/*.iml
+**/*.log
+**/pom.xml.versionsBackup
+**/atlassian-ide-plugin.xml
+work/
+target/
+.bower
