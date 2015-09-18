@@ -1,0 +1,80 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+
+    <f:section title="Vert.x Deploy Configuration">
+        <j:set var="groups" value="${descriptor.autoScalingGroups}"/>
+        <j:set var="mavenInstallations" value="${descriptor.mavenInstallations}"/>
+
+        <f:entry title="Select Auto Scaling Group" field="groupName">
+            <select class="setting-input" name="groupName">
+                <j:forEach var="group" items="${groups}">
+                    <f:option value="${group}" selected="${group==instance.groupName}">${group}
+                    </f:option>
+                </j:forEach>
+            </select>
+        </f:entry>
+
+        <f:entry title="Select Maven Installation" field="mavenInstallationName">
+            <select class="setting-input" name="mavenInstallationName">
+                <j:forEach var="maven" items="${mavenInstallations}">
+                    <f:option value="${maven.name}" selected="${maven.name==instance.mavenInstallationName}">${maven.name}
+                    </f:option>
+                </j:forEach>
+            </select>
+        </f:entry>
+
+        <f:entry title="Select Deploy Strategy" field="strategy">
+            <select class="setting-input" name="strategy">
+                <f:option value="DEFAULT" selected="${'DEFAULT' == instance.strategy}">Default</f:option>
+                <f:option value="KEEP_CAPACITY" selected="${'KEEP_CAPACITY' == instance.strategy}">Keep Capacity</f:option>
+                <f:option value="GUARANTEE_MINIMUM" selected="${'GUARANTEE_MINIMUM' == instance.strategy}">Guarantee Minimum</f:option>
+                <f:option value="WHATEVER" selected="${'WHATEVER' == instance.strategy}">Whatever</f:option>
+            </select>
+        </f:entry>
+
+        <f:entry field="credentialsId" title="Credentials ID">
+            <f:textbox default="" value="${instance.credentialsId}" />
+        </f:entry>
+        <f:entry field="maxSize" title="Set Maximum Group Size">
+            <f:number default="1" value="${instance.maxSize}" />
+        </f:entry>
+        <f:entry field="minSize" title="Set Minimum Group Size">
+            <f:number default="1" value="${instance.minSizes}"/>
+        </f:entry>
+
+        <f:entry field="useAwsPrivate" title="Use Aws Private Ip's">
+            <f:checkbox checked="${instance.useAwsPrivate}" default="true"/>
+        </f:entry>
+        <f:entry field="useAwsElb" title="Enable ELB Support">
+            <f:checkbox checked="${instance.useAwsElb}" default="false"/>
+        </f:entry>
+        <f:entry field="testScope" title="Test Scope">
+            <f:checkbox checked="${instance.testScope}" default="false"/>
+        </f:entry>
+        <f:entry field="allowSnapshots" title="Allow Snapshots">
+            <f:checkbox checked="${instance.allowSnapshots}" default="false"/>
+        </f:entry>
+
+        <f:advanced>
+            <f:entry field="mavenOpts" title="MAVEN_OPTS">
+                <f:textbox default="" value="${instance.mavenOpts}" />
+            </f:entry>
+            <f:entry field="exclusions" title="exclusions">
+                <f:textbox default="" value="${instance.exclusions}" />
+            </f:entry>
+            <f:entry field="deployConfig" title="Deploy Config">
+                <f:checkbox checked="${instance.deployConfig}" default="true"/>
+            </f:entry>
+            <f:entry field="restart" title="Restart">
+                <f:checkbox checked="${instance.restart}"  default="true"/>
+            </f:entry>
+            <f:entry field="decrementCapacity" title="Decrement Capacity">
+                <f:checkbox checked="${instance.decrementCapacity}" default="true"/>
+            </f:entry>
+            <f:entry field="ignoreInStandby" title="Ignore InStandby Instances">
+                <f:checkbox checked="${instance.ignoreInStandby}" default="false" />
+            </f:entry>
+        </f:advanced>
+    </f:section>
+</j:jelly>
