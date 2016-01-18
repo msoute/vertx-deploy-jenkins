@@ -75,6 +75,9 @@
             <f:entry field="ignoreInStandby" title="Ignore InStandby Instances">
                 <f:checkbox checked="${instance.ignoreInStandby}" default="false" />
             </f:entry>
+            <f:entry field="pluginVersion" title="Override maven plugin version">
+                <f:textbox value="${instance.pluginVersion}"  default="1.2.2"/>
+            </f:entry>
         </f:advanced>
     </f:section>
 </j:jelly>

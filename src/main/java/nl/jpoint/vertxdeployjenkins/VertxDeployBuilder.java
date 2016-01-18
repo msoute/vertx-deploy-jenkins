@@ -61,6 +61,7 @@ public class VertxDeployBuilder extends Builder {
     private final boolean testScope;
     private final boolean deployConfig;
     private final boolean allowSnapshots;
+    private final String pluginVersion;
 
     private String jdk;
     private final String mavenInstallationName;
@@ -70,7 +71,8 @@ public class VertxDeployBuilder extends Builder {
     public VertxDeployBuilder(String credentialsId, String groupName, String mavenOpts, String exclusions, Integer maxSize, Integer minSize,
                               String strategy, boolean useAwsPrivate, boolean useAwsElb,
                               boolean decrementCapacity, boolean ignoreInStandby, boolean restart,
-                              boolean testScope, boolean deployConfig, boolean allowSnapshots, String jdk, String mavenInstallationName) {
+                              boolean testScope, boolean deployConfig, boolean allowSnapshots, String jdk, String mavenInstallationName,
+                              String pluginVersion) {
         this.credentialsId = credentialsId;
         this.groupName = groupName;
         this.mavenOpts = mavenOpts;
@@ -88,6 +90,7 @@ public class VertxDeployBuilder extends Builder {
         this.jdk = jdk;
         this.allowSnapshots = allowSnapshots;
         this.mavenInstallationName = mavenInstallationName;
+        this.pluginVersion = pluginVersion;
     }
 
     /**
@@ -96,7 +99,7 @@ public class VertxDeployBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        VertxDeployMaven maven = VertxDeployMaven.executeMaven(mavenInstallationName, this.createPropertyString(), mavenOpts);
+        VertxDeployMaven maven = VertxDeployMaven.executeMaven(mavenInstallationName, this.createPropertyString(), mavenOpts, pluginVersion);
         try {
             boolean result = maven.perform(build, launcher, listener);
             build.setResult(result ? Result.SUCCESS : Result.FAILURE);
@@ -216,6 +219,8 @@ public class VertxDeployBuilder extends Builder {
         return mavenInstallationName;
     }
 
+    public String getPluginVersion() { return pluginVersion; }
+
     public MavenModuleSet getMavenProject(AbstractBuild<?, ?> build) {
         return (build.getProject() instanceof MavenModuleSet) ? (MavenModuleSet) build.getProject() : null;
     }
@@ -282,5 +287,7 @@ public class VertxDeployBuilder extends Builder {
         public AwsCredentials getCredentials() {
             return credentials;
         }
+
+
     }
 }
