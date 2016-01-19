@@ -272,9 +272,10 @@ public class VertxDeployBuilder extends Builder {
                 groups.addAll(result.getAutoScalingGroups());
             }
 
-            String[] groupNames = new String[groups.size()];
-            for (int i = 0; i < groups.size(); i++) {
-                groupNames[i] = groups.get(i).getAutoScalingGroupName();
+            String[] groupNames = new String[groups.size()+1];
+            groupNames[0] = "--- Select auto scaling group ---";
+            for (int i = 1; i <= groups.size(); i++) {
+                groupNames[i] = groups.get(i-1).getAutoScalingGroupName();
             }
 
             return groupNames;
