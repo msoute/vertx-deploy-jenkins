@@ -25,6 +25,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -232,6 +233,8 @@ public class VertxDeployBuilder extends Builder {
 
         private AwsCredentials credentials;
 
+        private String awsFilter = ".*";
+
         /**
          * In order to load the persisted global configuration, you have to
          * call load() in the constructor.
@@ -256,6 +259,10 @@ public class VertxDeployBuilder extends Builder {
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             String accessKey = formData.getString("accessKey");
             String secretAccessKey = formData.getString("secretAccessKey");
+            String filter = formData.getString("awsFilter");
+            if (filter != null && !filter.isEmpty()) {
+                awsFilter = filter;
+            }
             credentials = new AwsCredentials(accessKey, secretAccessKey);
             save();
             return super.configure(req, formData);
@@ -271,14 +278,14 @@ public class VertxDeployBuilder extends Builder {
                 result = amazonAutoScalingClient.describeAutoScalingGroups(new DescribeAutoScalingGroupsRequest().withNextToken(result.getNextToken()));
                 groups.addAll(result.getAutoScalingGroups());
             }
-
-            String[] groupNames = new String[groups.size()+1];
-            groupNames[0] = "--- Select auto scaling group ---";
-            for (int i = 1; i <= groups.size(); i++) {
-                groupNames[i] = groups.get(i-1).getAutoScalingGroupName();
+            List<String> filteredGroupNames = new ArrayList<String>();
+            filteredGroupNames.add("--- Select auto scaling group ---");
+            for (AutoScalingGroup asGroup : groups) {
+                if (asGroup.getAutoScalingGroupName().matches(awsFilter)) {
+                    filteredGroupNames.add(asGroup.getAutoScalingGroupName());
+                }
             }
-
-            return groupNames;
+            return filteredGroupNames.toArray(new String[filteredGroupNames.size()]);
         }
 
         public Maven.MavenInstallation[] getMavenInstallations() {
@@ -288,6 +295,8 @@ public class VertxDeployBuilder extends Builder {
         public AwsCredentials getCredentials() {
             return credentials;
         }
+
+        public String getAwsFilter() {return awsFilter; }
 
 
     }
